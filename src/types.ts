@@ -13,4 +13,6 @@ export type Column = {
   id: TaskType;
   title: string;
   icon: string
+  addTask?: boolean
+  deleteTask?: boolean
 };

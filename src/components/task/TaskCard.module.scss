@@ -1,14 +1,21 @@
-.task{ 
-    cursor: grab; 
+.taskCard{ 
+    cursor: move; 
     border-radius: 0.5rem;
-    background-color: #8b8585;
+    background-color:  rgba(232, 232, 232, 0.1);
     padding: 1rem;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s; 
+
+}
+.taskText{
   &:hover {  
-    box-shadow: 0px 4px 6px rgba(184, 31, 31, 0.1);   
+    color: wheat;
+    box-shadow: 0px 4px 6px rgba(228, 105, 105, 0.345);   
   }  
 }
-.text{
-  opacity: 2;
+.editMode{
+  color: black;
+  width: 100%;
+  border-radius: 2px;
+  background-color:  rgba(232, 232, 232, 0.1);
 }
