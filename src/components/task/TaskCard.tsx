@@ -1,13 +1,9 @@
-import React, { useState, memo, useCallback } from 'react';
-import { useDraggable } from '@dnd-kit/core';
+import { Button } from '@teamlead.incubator/ui-kit';
+import { memo, useCallback, useState } from 'react';
+import edit from '../../assets/icons/edit.svg';
 import { Task } from '../../types';
 import s from './TaskCard.module.scss';
-import { Button, Input } from '@teamlead.incubator/ui-kit';
-import edit from '../../assets/icons/edit.svg';
-import save from '../../assets/icons/check.svg';
-import close from '../../assets/icons/cross.svg';
 import { TaskEdit } from './TaskEdit';
-import { log } from 'node:console';
 
 type TaskCardProps = {
   task: Task;
@@ -15,10 +11,6 @@ type TaskCardProps = {
 };
 
 export const TaskCard = memo(({ task, editTask }: TaskCardProps) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id });
-
-  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
-  // const style = {}
 
   console.log('task' + task.id)
 
@@ -37,7 +29,7 @@ export const TaskCard = memo(({ task, editTask }: TaskCardProps) => {
   }, [editTask, task.id]);
 
   return (
-    <div ref={setNodeRef} {...listeners} {...attributes} className={s.taskCard} style={style}>
+    <div className={s.taskCard}>
       {isEditing ? (
         <TaskEdit task={task} onSave={handleSave} onCancel={handleEditToggle} />
       ) : (

@@ -9,7 +9,7 @@ export type Task = {
   text: string;
 };
 
-export type Column = {
+export type ColumnType = {
   id: TaskType;
   title: string;
   icon: string
