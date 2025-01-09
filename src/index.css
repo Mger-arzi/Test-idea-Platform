@@ -1,9 +1,28 @@
+@tailwind utilities;
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
+
+/* Подключаем шрифт Manrope */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&display=swap');
 
 body {
-  @apply bg-[url('assets/img/image.png')] bg-cover bg-center bg-grayscale-800 p-4 font-manrope text-white;  
-}  
-
-
+  background-image: url('assets/img/image.png'); 
+  background-size: cover; 
+  background-position: center;
+  background-repeat: no-repeat; 
+  
+  height: 100vh; 
+  margin: 0; 
+  padding: 1rem; 
+  
+  font-family: 'Manrope', sans-serif;
+  color: white; 
+  
+  background-attachment: fixed; 
+}
+label {
+  color: rgb(255, 253, 253)
+}
+input{
+  color: black
+}

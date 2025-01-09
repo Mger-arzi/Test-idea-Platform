@@ -2,23 +2,22 @@ import { useDroppable } from '@dnd-kit/core';
 import { Column as ColumnType, Task } from '../../types';
 import s from './Column.module.scss';
 import { TaskCard } from '../task';
-import { Button } from '@teamlead.incubator/ui-kit';
-import { ReactElement, useState } from 'react';
+import { memo } from 'react';
 type ColumnProps = {
   column: ColumnType;
-  tasks: Task[];
+  tasks?: Task[];
   icon: string;
   addTask: React.ReactNode;
   deleteTask: React.ReactNode;
   editTask: (id: string, updatedTask: Omit<Task, 'id'>) => void; // Добавление функции редактирования  
 };
 
-export function Column({ column, tasks, icon, addTask, editTask, deleteTask }: ColumnProps) {
+export const Column = memo(({ column, tasks, icon, addTask, editTask, deleteTask }: ColumnProps) => {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
 
-
+  console.log('render column', column.id)
   return (
     <div className={s.column}>
       <div className={s.titleColumn}>
@@ -30,10 +29,10 @@ export function Column({ column, tasks, icon, addTask, editTask, deleteTask }: C
       </div>
 
       <div ref={setNodeRef} className={s.taskMap}>
-        {tasks.map((task) => {
+        {tasks?.map((task) => {
           return <TaskCard key={task.id} task={task} editTask={editTask} />;
         })}
       </div>
     </div>
   );
-}
+})
