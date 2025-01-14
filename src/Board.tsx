@@ -15,7 +15,8 @@ const COLUMNS: ColumnType[] = [
 
 ];
 export default function Board() {
-  const { handleDragEnd, addTaskButton, deleteTaskButton, editTask, tasks } = useBoard();
+  const { handleDragEnd, addTaskButton, deleteTaskButton, editTask, tasksMap } = useBoard();
+  console.log('board');
 
   return (
     <div className="p-4">
@@ -27,8 +28,8 @@ export default function Board() {
               <Column
                 key={column.id}
                 column={column}
-                // tasks={tasksMap.get(column.id)}
-                tasks={tasks.filter(t => t.type === column.id)}
+                tasks={tasksMap.get(column.id)}
+                // tasks={tasks.filter(t => t.type === column.id)}
                 icon={column.icon}
                 addTask={column.addTask ? addTaskButton : null}
                 editTask={editTask}

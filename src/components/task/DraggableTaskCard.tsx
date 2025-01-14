@@ -11,7 +11,7 @@ type TaskCardProps = {
 
 export const DraggableTaskCard = memo(({ task, editTask }: TaskCardProps) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id });
-
+  console.log('DraggableTaskCard');
   const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
 
 
@@ -19,5 +19,8 @@ export const DraggableTaskCard = memo(({ task, editTask }: TaskCardProps) => {
     <div ref={setNodeRef} {...listeners} {...attributes} className={s.taskCard} style={style}>
       <TaskCard task={task} editTask={editTask} />
     </div>
+    // <div className={s.taskCard}>
+    //   <TaskCard task={task} editTask={editTask} />
+    // </div>
   );
 });

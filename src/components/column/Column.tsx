@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
 import { ColumnType, Task } from '../../types';
 import s from './Column.module.scss';
-import { TaskCard } from '../task';
 import { memo } from 'react';
 import { DraggableTaskCard } from '../task/DraggableTaskCard';
+import { DroppableTasksList } from '../task/DroppableTasksList';
 type ColumnProps = {
   column: ColumnType;
   tasks?: Task[];
@@ -26,20 +26,8 @@ export const Column = memo(({ column, tasks, icon, addTask, editTask, deleteTask
 
         {addTask}{deleteTask}
       </div>
+
       <DroppableTasksList column={column} tasks={tasks} editTask={editTask} />
     </div>
   );
 })
-export const DroppableTasksList = ({ column, tasks, editTask }: any) => {
-  const { setNodeRef } = useDroppable({
-    id: column.id,
-  });
-  return (
-    <div ref={setNodeRef} className={s.taskMap}>
-      {tasks?.map((task) => {
-        return <DraggableTaskCard key={task.id} task={task} editTask={editTask} />;
-      })}
-    </div>
-  )
-
-}

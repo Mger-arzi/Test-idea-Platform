@@ -19,6 +19,7 @@ export const TaskCard = memo(({ task, editTask }: TaskCardProps) => {
   const handleEditToggle = () => setIsEditing(prev => !prev);
 
   const handleSave = useCallback((eventData: any) => {
+
     editTask(task.id, {
       startDay: new Date(eventData.startDay).getTime(),
       endDay: new Date(eventData.endDay).getTime(),
@@ -34,6 +35,7 @@ export const TaskCard = memo(({ task, editTask }: TaskCardProps) => {
         <TaskEdit task={task} onSave={handleSave} onCancel={handleEditToggle} />
       ) : (
         <div>
+
           <p className={s.taskText}>Начало: {new Date(task.startDay).toLocaleDateString()}</p>
           <p className={s.taskText}>Окончание: {new Date(task.endDay).toLocaleDateString()}</p>
           <p className={s.taskText}>Описание: {task.text}</p>

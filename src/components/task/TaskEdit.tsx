@@ -10,6 +10,7 @@ type TaskEditProps = {
   onCancel: () => void;
 };
 export const TaskEdit = memo(({ task, onSave, onCancel }: TaskEditProps) => {
+  console.log('TaskEdit' + task.id)
   const [newStartDay, setNewStartDay] = useState(new Date(task.startDay).toISOString().split('T')[0]);
   const [newEndDay, setNewEndDay] = useState(new Date(task.endDay).toISOString().split('T')[0]);
   const [newText, setNewText] = useState(task.text);
@@ -47,10 +48,9 @@ export const TaskEdit = memo(({ task, onSave, onCancel }: TaskEditProps) => {
         </label>
       </div>
       <Button onMouseDown={(e) => {
-        e.preventDefault();
         onSave({
           startDay: newStartDay, endDay: newEndDay, text: newText,
-          type: "todo"
+          type: task.type
         });
       }}
       >
