@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { DragEndEvent } from '@dnd-kit/core';
 import { Task } from '@/types';
 import { Button } from '@teamlead.incubator/ui-kit';
-import deleteIcon from '../assets/icons/trash.svg';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const INITIAL_TASKS: Task[] = [
   { id: "1", type: "done", startDay: 1700000000000, endDay: 1703740800000, text: "Завершить рефакторинг старого кода." },
@@ -26,6 +24,7 @@ function convertToMap(tasks: Task[]): Map<string, Task[]> {
 export const useBoard = () => {
   // const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [tasksMap, setTasksMap] = useState<Map<string, Task[]>>(() => convertToMap(INITIAL_TASKS));
+  console.log('TasksMap state ' + tasksMap);
 
   useEffect(() => {
 
@@ -45,72 +44,30 @@ export const useBoard = () => {
   //   setTasksMap(convertToMap(tasks)); // обновляем tasksMap в зависимости от tasks  
   // }, [tasks]);
 
-  // const handleDragEnd = useCallback((event: DragEndEvent) => {
-  //   debugger
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const taskId = active.id as string;
-  //   const newStatus = over.id as Task['type'];
-
-
-  //   setTasksMap((prevMap) => {
-  //     debugger
-  //     const updatedMap = new Map(prevMap);
-  //     // Находим задачу по id и меняем её статус
-  //     updatedMap.forEach((tasks) => {
-  //       const taskIndex = tasks.findIndex((task) => task.id === taskId);
-  //       if (taskIndex !== -1) {
-  //         const updatedTask = { ...tasks[taskIndex], type: newStatus };
-  //         tasks[taskIndex] = updatedTask; // Обновляем задачу в старом статусе
-  //       }
-  //     });
-
-  //     return updatedMap;
-  //   })
-
-  //   // setTasks((prevTasks) =>
-  //   //   prevTasks.map((task) =>
-  //   //     task.id === taskId
-  //   //       ? {
-  //   //         ...task,
-  //   //         type: newStatus,
-  //   //       }
-  //   //       : task,
-  //   //   ),
-  //   // );
-
-  // }, []);
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-
-    const { active, over } = event;
-    if (!over) return;
-
-    const taskId = active.id as string;
-    const newStatus = over.id as Task['type'];
+  const moveTaskToColumn = (fromColumnId: string, toColumnId: string, taskId: string) => {
+    if (fromColumnId === toColumnId) return;
 
     setTasksMap((prevMap) => {
-
       const updatedMap = new Map(prevMap);
 
-      updatedMap.forEach((tasks, type) => {
-        const taskIndex = tasks.findIndex((task) => task.id === taskId);
-        if (taskIndex !== -1) {
-          // Создаем новый массив с обновленной задачей
-          const updatedTasks = [
-            ...tasks.slice(0, taskIndex), // Старая часть массива
-            { ...tasks[taskIndex], type: newStatus }, // Обновленная задача
-            ...tasks.slice(taskIndex + 1), // Оставшаяся часть массива
-          ];
+      const fromColumn = updatedMap.get(fromColumnId) || [];
+      const toColumn = updatedMap.get(toColumnId) || [];
 
-          updatedMap.set(type, updatedTasks); // Устанавливаем обновленный массив задач
-        }
-      });
+      // Находим задачу для перемещения  
+      const taskToMove = fromColumn.find((task) => task.id === taskId);
+
+      if (taskToMove) {
+        // Изменяем тип задачи на id целевой колонки  
+        const updatedTask = { ...taskToMove, type: toColumnId };
+
+        // Удаляем задачу из предыдущей колонки и добавляем обновленную в новую  
+        updatedMap.set(fromColumnId, fromColumn.filter((task) => task.id !== taskId));
+        updatedMap.set(toColumnId, [updatedTask, ...toColumn]);
+      }
 
       return updatedMap;
     });
-  }, []);
-
+  };
   const addTask = () => {
     const newTask: Task = {
       id: Math.random().toString(),
@@ -134,21 +91,40 @@ export const useBoard = () => {
     // });
   };
 
-  const deleteTask = () => {
+  const deleteTask = (columnId: string, taskId: string) => {
     setTasksMap(prevTasks => {
       const updatedTasks = new Map(prevTasks);
-      const tasks = updatedTasks.get('done') || [];
-      const filteredTasks = tasks.filter(task => task.type !== 'done');
-      updatedTasks.set('done', filteredTasks);
+      const tasks = updatedTasks.get(columnId) || [];
+      const filteredTasks = tasks.filter(task => task.id !== taskId);
+      updatedTasks.set(columnId, filteredTasks);
       return updatedTasks;
     });
+
+    // setTasksMap(prevTasks => {
+    //   const updatedTasks = new Map(prevTasks);
+    //   const tasks = updatedTasks.get('done') || [];
+    //   const filteredTasks = tasks.filter(task => task.type !== 'done');
+    //   updatedTasks.set('done', filteredTasks);
+    //   return updatedTasks;
+    // });
     // setTasks(prevTasks => {
     //   const updatedTasks = prevTasks.filter(task => task.type !== 'done');
     //   localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     //   return updatedTasks;
     // });
   };
-  const editTask = useCallback((id: string, updatedTask: Omit<Task, 'id'>) => {
+
+  const handleDragEnd = (event: any) => {
+    console.log("handleDragEnd");
+    // оперделлили, что мы перетащили туда, где должно удалиться таска
+    if (event.over && event.over.id === 'droppableDeleteTask') {
+      deleteTask(event.active.data.current.columnId, event.active.data.current.taskId);
+    }
+    if (event.over && event.over.id.startsWith('droppableColumn_')) {
+      moveTaskToColumn(event.active.data.current.columnId, event.over.data.current.columnId, event.active.data.current.taskId);
+    }
+  }
+  const editTask = useCallback((id: string, columnId: string, updatedTask: Omit<Task, 'id'>) => {
     setTasksMap(prevTasks => {
       const updatedTasks = new Map(prevTasks);
       const tasks = updatedTasks.get(updatedTask.type) || [];
@@ -162,21 +138,30 @@ export const useBoard = () => {
     //   prevTasks.map(task => (task.id === id ? { ...task, ...updatedTask } : task))
     // );
   }, []);
-  console.log(tasksMap);
+
+
   const addTaskButton = useMemo(() => {
     return (
       <Button onClick={addTask} > + Добавить </Button>
     );
   }, []);
 
-  const deleteTaskButton = useMemo(() => {
+  // const deleteTaskButton = (columnId: string, taskId: string) => {
 
-    return (
+  //   return (
+  //     <DroppableAreaForDeleteTask columnId={columnId} taskId={taskId} deleteTask={deleteTaskButton} />/
+  //   );
+  // };
+  const deleteTaskButton = () => {
+    setTasksMap(prevTasks => {
+      const updatedTasks = new Map(prevTasks);
+      const tasks = updatedTasks.get('done') || [];
+      const filteredTasks = tasks.filter(task => task.type !== 'done');
+      updatedTasks.set('done', filteredTasks);
+      return updatedTasks;
+    });
+  }
 
-      <Button onClick={deleteTask} > <img src={deleteIcon} /> </Button>
-
-    );
-  }, []);
 
   return {
     // tasks,
@@ -185,5 +170,6 @@ export const useBoard = () => {
     addTaskButton,
     deleteTaskButton,
     editTask,
+    deleteTask,
   };
 }

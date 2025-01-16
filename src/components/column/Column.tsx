@@ -1,33 +1,19 @@
-import { useDroppable } from '@dnd-kit/core';
-import { ColumnType, Task } from '../../types';
+import { ColumnType, Task } from "@/types";
+import { DraggableTaskCard } from "../task/DraggableTaskCard";
 import s from './Column.module.scss';
-import { memo } from 'react';
-import { DraggableTaskCard } from '../task/DraggableTaskCard';
-import { DroppableTasksList } from '../task/DroppableTasksList';
-type ColumnProps = {
+
+type ColumnTypeProps = {
   column: ColumnType;
   tasks?: Task[];
-  icon: string;
-  addTask: React.ReactNode;
-  deleteTask: React.ReactNode;
-  editTask: (id: string, updatedTask: Omit<Task, 'id'>) => void; // Добавление функции редактирования  
-};
-
-export const Column = memo(({ column, tasks, icon, addTask, editTask, deleteTask }: ColumnProps) => {
-
-
-  console.log('render column', column.id)
+  setNodeRef: (node: HTMLElement | null) => void;
+  editTask: (id: string, columnId: string, updatedTask: Omit<Task, 'id'>) => void;
+}
+export const Column = ({ tasks, setNodeRef, column, editTask }: ColumnTypeProps) => {
   return (
-    <div className={s.column}>
-      <div className={s.titleColumn}>
-
-        <img src={icon} alt="" width="20" height="20" />
-        <h2 className={s.columnH2}>{column.title}</h2>
-
-        {addTask}{deleteTask}
-      </div>
-
-      <DroppableTasksList column={column} tasks={tasks} editTask={editTask} />
+    <div ref={setNodeRef} className={s.taskMap}>
+      {tasks?.map((task) => {
+        return <DraggableTaskCard key={task.id} task={task} editTask={editTask} column={column} />;
+      })}
     </div>
-  );
-})
+  )
+}

@@ -5,12 +5,12 @@ export type Task = {
   id: string;
   startDay: number | string
   endDay: number | string
-  type: TaskType;
+  type: string;
   text: string;
 };
 
 export type ColumnType = {
-  id: TaskType;
+  id: string;
   title: string;
   icon: string
   addTask: boolean
